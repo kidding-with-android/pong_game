@@ -6,7 +6,10 @@ import 'package:pong_game/components/racket.dart';
 
 class PongGame extends FlameGame with TapDetector, LongPressDetector {
   double tileSize = 0;
+  bool started = true;
+
   late Racket racket;
+  late Ball ball;
 
   @override
   Future<void> onLoad() async {
@@ -17,7 +20,8 @@ class PongGame extends FlameGame with TapDetector, LongPressDetector {
     racket = Racket(this);
     add(racket);
 
-    add(Ball(this));
+    ball = Ball(this);
+    add(ball);
   }
 
   @override
@@ -27,56 +31,35 @@ class PongGame extends FlameGame with TapDetector, LongPressDetector {
     super.onGameResize(canvasSize);
   }
 
-  // @override
-  // void render(Canvas canvas) {
-  //   // TODO: implement render
-  //   super.render(canvas);
-  // }
-
-  // @override
-  // void update(double dt) {
-  //   // TODO: implement update
-  //   super.update(dt);
-  // }
-
-  bool _pressed = false;
-
   @override
   void onTapDown(TapDownInfo info) {
-    _pressed = true;
     _moveRacket(info.eventPosition);
     super.onTapDown(info);
   }
 
   @override
   void onTapUp(TapUpInfo info) {
-    _pressed = false;
+    racket.stopMoving();
     super.onTapUp(info);
   }
 
   @override
   void onLongPressStart(LongPressStartInfo info) {
-    _pressed = true;
     _moveRacket(info.eventPosition);
     super.onLongPressStart(info);
   }
 
   @override
   void onLongPressEnd(LongPressEndInfo info) {
-    _pressed = false;
+    racket.stopMoving();
     super.onLongPressEnd(info);
   }
 
   void _moveRacket(EventPosition e) {
-    Future.doWhile(() async {
-      if (e.game.x > (canvasSize.x / 2)) {
-        racket.moveRight();
-      } else {
-        racket.moveLeft();
-      }
-
-      return await Future.delayed(
-          const Duration(milliseconds: 1), () => _pressed);
-    });
+    if (e.game.x > (canvasSize.x / 2)) {
+      racket.startMoveRight();
+    } else {
+      racket.startMoveLeft();
+    }
   }
 }

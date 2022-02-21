@@ -13,7 +13,8 @@ class Racket extends RectangleComponent {
 
   PongGame game;
 
-  final double _moveStep = 2;
+  final double _moveStep = 80;
+  int _moveModifier = 0;
 
   @override
   Future<void>? onLoad() {
@@ -23,20 +24,30 @@ class Racket extends RectangleComponent {
     return super.onLoad();
   }
 
-  moveLeft() {
-    int _moveModifier = -1;
-    _move(_moveModifier);
+  @override
+  void update(double dt) {
+    if (_moveModifier != 0) _move(dt);
+    super.update(dt);
   }
 
-  moveRight() {
-    int _moveModifier = 1;
-    _move(_moveModifier);
+  startMoveLeft() {
+    _moveModifier = -1;
   }
 
-  _move(int direction) {
-    double nextPos = position.x + (_moveStep * direction);
+  startMoveRight() {
+    _moveModifier = 1;
+  }
+
+  stopMoving() {
+    _moveModifier = 0;
+  }
+
+  _move(double dt) {
+    double nextPos = position.x + (_moveStep * _moveModifier * dt);
     double max = game.canvasSize.x - (size.x / 2);
     double min = 0 + (size.x / 2);
+
+    print('movendo');
 
     if (nextPos < min) {
       position.setValues(min, position.y);

@@ -3,14 +3,17 @@ import 'package:flame/extensions.dart';
 
 import '../pong_game.dart';
 
-class Ball extends RectangleComponent {
+class Ball extends CircleComponent {
   Ball(this.game)
       : super(
-            size: Vector2(game.tileSize * .5, game.tileSize * .5),
+            radius: game.tileSize * .25,
             position: Vector2((game.canvasSize.x / 2),
                 ((game.canvasSize.y / game.tileSize) - 1.5) * game.tileSize));
 
   PongGame game;
+
+  final double _moveStep = .2;
+  int direction = 1;
 
   @override
   Future<void>? onLoad() {
@@ -18,5 +21,19 @@ class Ball extends RectangleComponent {
     anchor = Anchor.topCenter;
 
     return super.onLoad();
+  }
+
+  @override
+  void update(double dt) {
+    if (game.started) {
+      if (position.y < 0 || position.y > game.canvasSize.y) {
+        direction = direction * -1;
+      }
+
+      position.setValues(
+          position.x, position.y + (direction * game.tileSize * dt * 5));
+    }
+
+    super.update(dt);
   }
 }
