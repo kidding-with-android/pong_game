@@ -18,9 +18,6 @@ class Ball extends CircleComponent with Collidable {
   int directionX = 1;
   int directionY = 1;
 
-  bool _collisionX = false;
-  bool _collisionY = false;
-
   @override
   Future<void>? onLoad() {
     paint.color = const Color(0xFF000000);
@@ -32,15 +29,6 @@ class Ball extends CircleComponent with Collidable {
   @override
   void update(double dt) {
     if (game.started) {
-      if (_collisionX) {
-        directionX *= -1;
-        _collisionX = false;
-      }
-      if (_collisionY) {
-        directionY *= -1;
-        _collisionY = false;
-      }
-
       position.setValues(
           position.x + (directionX * game.tileSize * dt * _moveSpeed),
           position.y + (directionY * game.tileSize * dt * _moveSpeed));
@@ -52,26 +40,20 @@ class Ball extends CircleComponent with Collidable {
   @override
   void onCollision(Set<Vector2> intersectionPoints, Collidable other) {
     if (other is ScreenCollidable<FlameGame>) {
-      if (intersectionPoints.first.x <= 0 ||
-          intersectionPoints.first.x >= game.canvasSize.x) {
-        _collisionX = true;
-      }
+      if (intersectionPoints.first.x <= 0) directionX = 1;
+      if (intersectionPoints.first.x >= game.canvasSize.x) directionX = -1;
 
-      if (intersectionPoints.first.y <= 0 ||
-          intersectionPoints.first.y >= game.canvasSize.y) {
-        _collisionY = true;
-      }
+      if (intersectionPoints.first.y <= 0) directionY = 1;
+      if (intersectionPoints.first.y >= game.canvasSize.y) directionY = -1;
       print(
           "[${DateTime.now().toIso8601String()}] bateu na parede (${other.toString()})");
     }
 
-    if (other is Racket) {}
+    if (other is Racket) {
+      if (intersectionPoints.first.y <= other.position.y) directionY = -1;
+      print(
+          "[${DateTime.now().toIso8601String()}] bateu na raquete (${other.toString()})");
+    }
     super.onCollision(intersectionPoints, other);
-  }
-
-  @override
-  void onCollisionEnd(Collidable other) {
-    // TODO: implement onCollisionEnd
-    super.onCollisionEnd(other);
   }
 }
