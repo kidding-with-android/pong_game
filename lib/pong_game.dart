@@ -1,10 +1,12 @@
+import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:pong_game/components/background.dart';
 import 'package:pong_game/components/ball.dart';
 import 'package:pong_game/components/racket.dart';
 
-class PongGame extends FlameGame with TapDetector, LongPressDetector {
+class PongGame extends FlameGame
+    with TapDetector, LongPressDetector, HasCollidables {
   double tileSize = 0;
   bool started = true;
 
@@ -16,6 +18,7 @@ class PongGame extends FlameGame with TapDetector, LongPressDetector {
     await super.onLoad();
 
     add(Background(this));
+    add(ScreenCollidable());
 
     racket = Racket(this);
     add(racket);

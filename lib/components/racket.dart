@@ -4,7 +4,7 @@ import 'package:flame/input.dart';
 
 import '../pong_game.dart';
 
-class Racket extends RectangleComponent {
+class Racket extends RectangleComponent with Collidable {
   Racket(this.game)
       : super(
             size: Vector2(game.tileSize * 3, game.tileSize * .5),
@@ -13,8 +13,8 @@ class Racket extends RectangleComponent {
 
   PongGame game;
 
-  final double _moveStep = 80;
-  int _moveModifier = 0;
+  final double _moveSpeed = 15;
+  int _direction = 0;
 
   @override
   Future<void>? onLoad() {
@@ -26,28 +26,27 @@ class Racket extends RectangleComponent {
 
   @override
   void update(double dt) {
-    if (_moveModifier != 0) _move(dt);
+    if (_direction != 0) _move(dt);
     super.update(dt);
   }
 
   startMoveLeft() {
-    _moveModifier = -1;
+    _direction = -1;
   }
 
   startMoveRight() {
-    _moveModifier = 1;
+    _direction = 1;
   }
 
   stopMoving() {
-    _moveModifier = 0;
+    _direction = 0;
   }
 
   _move(double dt) {
-    double nextPos = position.x + (_moveStep * _moveModifier * dt);
+    double nextPos =
+        position.x + (_direction * game.tileSize * dt * _moveSpeed);
     double max = game.canvasSize.x - (size.x / 2);
     double min = 0 + (size.x / 2);
-
-    print('movendo');
 
     if (nextPos < min) {
       position.setValues(min, position.y);
