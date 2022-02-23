@@ -1,6 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:pong_game/components/racket.dart';
 
 import '../pong_game.dart';
@@ -39,20 +40,39 @@ class Ball extends CircleComponent with Collidable {
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, Collidable other) {
-    if (other is ScreenCollidable<FlameGame>) {
-      if (intersectionPoints.first.x <= 0) directionX = 1;
-      if (intersectionPoints.first.x >= game.canvasSize.x) directionX = -1;
+    if (game.started) {
+      if (other is ScreenCollidable<FlameGame>) {
+        // Esquerda
+        if (intersectionPoints.first.x <= 0) {
+          FlameAudio.play('Blop.mp3');
+          directionX = 1;
+        }
+        // Direita
+        if (intersectionPoints.first.x >= game.canvasSize.x) {
+          FlameAudio.play('Blop.mp3');
+          directionX = -1;
+        }
 
-      if (intersectionPoints.first.y <= 0) directionY = 1;
-      if (intersectionPoints.first.y >= game.canvasSize.y) directionY = -1;
-      print(
-          "[${DateTime.now().toIso8601String()}] bateu na parede (${other.toString()})");
-    }
+        // Topo
+        if (intersectionPoints.first.y <= 0) {
+          FlameAudio.play('Blop.mp3');
+          directionY = 1;
+        }
+        //Baixo
+        if (intersectionPoints.first.y >= game.canvasSize.y) {
+          game.started = false;
+        }
+        print("[${DateTime.now().toIso8601String()}] bateu na parede");
+      }
 
-    if (other is Racket) {
-      if (intersectionPoints.first.y <= other.position.y) directionY = -1;
-      print(
-          "[${DateTime.now().toIso8601String()}] bateu na raquete (${other.toString()})");
+      if (other is Racket) {
+        if (intersectionPoints.first.y == other.position.y) {
+          FlameAudio.play('Blop.mp3');
+          directionY = -1;
+        }
+
+        print("[${DateTime.now().toIso8601String()}] bateu na raquete");
+      }
     }
     super.onCollision(intersectionPoints, other);
   }
